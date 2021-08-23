@@ -89,6 +89,7 @@ ShooterSubsystem m_shooter;
      m_intakeSubsystem.extendIntake();
     ///m_intakeSubsystem.startIntakeMotors();
 
+    //TODO Is this right?
     if(m_driveSubsystem.m_imu.getAngle() >= 180)
     {
       m_isFinished = true;

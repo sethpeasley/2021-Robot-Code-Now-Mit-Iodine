@@ -28,10 +28,10 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 @SuppressWarnings("PMD.ExcessiveImports")
 public class DriveSubsystem extends SubsystemBase 
 {
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry tx = table.getEntry("tx");
-    NetworkTableEntry ty = table.getEntry("ty");
-    NetworkTableEntry ta = table.getEntry("ta");
+    // NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    // NetworkTableEntry tx = table.getEntry("tx");
+    // NetworkTableEntry ty = table.getEntry("ty");
+    // NetworkTableEntry ta = table.getEntry("ta");
     
     Trajectory m_trajectory; 
 
@@ -82,13 +82,13 @@ public class DriveSubsystem extends SubsystemBase
       m_states =
         SwerveDriveModuleConstants.kinematics.toSwerveModuleStates(
             fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(m_imu.getAngle()))
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(optimizeAngle()))
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
         SwerveDriveKinematics.normalizeWheelSpeeds(m_states, SwerveDriveModuleConstants.k_MaxSpeed);
         for (int i = 0; i < m_states.length; i++) 
         {
             SwerveModule module = modules[i];
-            SmartDashboard.putNumber(String.valueOf(i) + " Drive Velocity", module.getDriveVelocity());
+        //    SmartDashboard.putNumber(String.valueOf(i) + " Drive Velocity", module.getDriveVelocity());
             module.setDesiredState(m_states[i]);
         } 
 
@@ -108,6 +108,17 @@ public class DriveSubsystem extends SubsystemBase
         return m_states;
     }
 
+    public double optimizeAngle()
+    {
+        double angle = m_imu.getAngle() % 360;
+        if(angle > 180){
+            angle = 360 - angle; 
+        } else if(angle < -180){
+            angle = 360 + angle;
+        }
+        return -angle;
+    }
+
     public void resetIMU()
     {
         m_imu.reset();
@@ -119,7 +130,7 @@ public class DriveSubsystem extends SubsystemBase
       //setSteerPthroughDashboard();
       //setSteerDthroughDashboard();
       // This method will be called once per scheduler run
-      var gyroAngle = Rotation2d.fromDegrees(m_imu.getAngle());
+      var gyroAngle = Rotation2d.fromDegrees(optimizeAngle());
       m_Robotpose = m_odometry.update(gyroAngle, modules[0].getState(), modules[1].getState(), modules[2].getState(), modules[3].getState());
     }
   
