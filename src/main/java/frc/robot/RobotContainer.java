@@ -105,7 +105,9 @@ public class RobotContainer
         // TrajectoriesExporter.exportTrajectoryToHumanReadable(traj, RedAPath.getTrajectoryName());
 
         configureButtonBindings();
+        
         m_robotDrive.setDefaultCommand(new SwerveDriveCommand(m_robotDrive, m_driverController));
+        
         m_hood.setDefaultCommand(new HoodDefaultCommand(m_hood));
 
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
